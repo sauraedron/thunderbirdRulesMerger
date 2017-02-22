@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <fstream>
 using namespace std;
 int main(int argv, char **argc)
@@ -14,7 +15,7 @@ int main(int argv, char **argc)
   //  op = argc[3];
   //  input_file = argc[4];
   //  destination = argc[5];
-  dat_file = "/home/saurabh/.thunderbird/9jtgbmex.default/ImapMail/imap.mail.yahoo.com/msgFilterRules.dat";
+  dat_file = "/home/saurabh/.thunderbird/9jtgbmex.default/ImapMail/imap.mail.yahoo.com/messageFilterRules.dat";
   filter = "subject";
   op = "contains";
   input_file = "/home/saurabh/thunderbird.dat";
@@ -23,13 +24,30 @@ int main(int argv, char **argc)
     {
       ifstream userRead;
       ofstream userWrite;
-      userWrite.open("\home\saurabh\op.txt");
+      userWrite.open(dat_file, ios::app);
       userRead.open(input_file.c_str());
       string tmp;
+      vector<string> input_values;
       while(getline(userRead, tmp))
 	{	  
-	  cout<<tmp<<"\n";
+	  input_values.push_back(tmp);
 	}
+      userRead.close();
+      //      userWrite.seekg(ios::en);
+      userWrite<<"name=\"Auto gen\"\n";
+      userWrite<<"enabled=\"yes\"\n";
+      userWrite<<"type=\"17\"\n";
+      userWrite<<"action = \"Move to folder\"\n";
+      userWrite<<"actionValue=\""<<destination<<"\"\n";
+      userWrite<<"condition=\"";
+      for(int i=0; i<input_values.size(); ++i)
+	{
+	  userWrite<<"OR (from,"<<op<<","<<input_values.at(i)<<") ";
+	}
+      userWrite<<"\""<<endl;
+      
+      userWrite.close();
+      
     }
   catch(const exception &e)
     {
